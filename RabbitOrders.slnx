@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="Notifications.Worker/Notifications.Worker.csproj" Id="adccaf61-f910-4fb2-8aa8-dd9c0d43e779" />
+  <Project Path="Orders.Api/Orders.Api.csproj" />
+  <Project Path="Orders.Application/Orders.Application.csproj" Id="867ae4be-ceef-40ba-a7d8-8ca440086639" />
+  <Project Path="Orders.Infrastructure.RabbitMq/Orders.Infrastructure.RabbitMq.csproj" Id="13af6a83-82cb-4d18-892f-e20ba945a389" />
+  <Project Path="Payments.Worker/Payments.Worker.csproj" Id="d571ebc1-7c87-4c0a-adf4-46585f0077b7" />
+</Solution>
