@@ -14,7 +14,8 @@ namespace Notifications.Worker
 
             builder.Services.AddRabbitMqMessaging();
             builder.Services.AddHostedService<RabbitMqTopologyDeclare>();
-            builder.Services.AddHostedService<PaymentConsumerBackgroundService>();
+            builder.Services.AddHostedService<PaymentSucceededConsumer>();
+            builder.Services.AddHostedService<PaymentFailedConsumer>();
 
             using IHost host = builder.Build();
 

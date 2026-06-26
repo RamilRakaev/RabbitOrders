@@ -1,39 +1,27 @@
-﻿using Microsoft.Extensions.Hosting;
-using Orders.Application.Constants;
+﻿using Orders.Application.Constants;
 using Orders.Application.Models;
+using Orders.Infrastructure.RabbitMq.AbstractClasses;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using System.Text.Json;
 
 namespace Payments.Worker.Services
 {
-    internal class OrderCreationRouter(IChannel channel) : BackgroundService
+    internal class OrderCreationRouter(IChannel channel) : BaseRabbitMqRouter<Message>(channel, RabbitMqNames.ExchangeName)
     {
         private readonly IChannel _channel = channel;
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        protected override async Task RouteMessageAsync(Message? message, BasicDeliverEventArgs eventArgs)
         {
-            AsyncEventingBasicConsumer consumer = new(_channel);
-            consumer.ReceivedAsync += async (ch, ea) =>
+            if (message is not null && message.EventType == EventTypes.OrderCreated)
             {
-                var message = JsonSerializer.Deserialize<Message>(ea.Body.Span);
-                BasicProperties properties = new()
-                {
-                    ContentType = "application/json",
-                    DeliveryMode = DeliveryModes.Persistent,
-                };
-                if (message is not null && message.EventType == EventTypes.OrderCreated)
-                {
-                    await _channel.BasicPublishAsync(RabbitMqNames.ExchangeName, RabbitMqNames.PaymentSucceededQueueName, false, properties, ea.Body);
-                    await _channel.BasicAckAsync(ea.DeliveryTag, false);
-                }
-                else
-                {
-                    await _channel.BasicPublishAsync(RabbitMqNames.ExchangeName, RabbitMqNames.PaymentFailedQueueName, false, properties, ea.Body);
-                    await _channel.BasicNackAsync(ea.DeliveryTag, false, false);
-                }
-            };
-            await _channel.BasicConsumeAsync(RabbitMqNames.OrderCreatedQueueName, false, consumer);
+                await PublishAsync(RabbitMqNames.PaymentSucceededQueueName, eventArgs.Body);
+                await _channel.BasicAckAsync(eventArgs.DeliveryTag, false);
+            }
+            else
+            {
+                await PublishAsync(RabbitMqNames.PaymentFailedQueueName, eventArgs.Body);
+                await _channel.BasicNackAsync(eventArgs.DeliveryTag, false, false);
+            }
         }
     }
 }
