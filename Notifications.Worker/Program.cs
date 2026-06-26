@@ -1,8 +1,8 @@
-﻿using Orders.Application.Constants;
-using Orders.Application.Models;
-using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
-using System.Text.Json;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Notifications.Worker.Services;
+using Orders.Infrastructure.RabbitMq;
+using Orders.Infrastructure.RabbitMq.Helpers;
 
 namespace Notifications.Worker
 {
@@ -10,43 +10,15 @@ namespace Notifications.Worker
     {
         static async Task Main(string[] args)
         {
-            ConnectionFactory factory = new();
-            var connection = await factory.CreateConnectionAsync();
-            var channel = await connection.CreateChannelAsync();
+            HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 
-            await channel.ExchangeDeclareAsync(RabbitMqNames.ExchangeName, ExchangeType.Direct, true, false);
+            builder.Services.AddRabbitMqMessaging();
+            builder.Services.AddHostedService<RabbitMqTopologyDeclare>();
+            builder.Services.AddHostedService<PaymentConsumerBackgroundService>();
 
-            await channel.QueueDeclareAsync(RabbitMqNames.PaymentSucceededQueueName, true, false, false);
-            await channel.QueueBindAsync(RabbitMqNames.PaymentSucceededQueueName, RabbitMqNames.ExchangeName, RabbitMqNames.PaymentSucceededQueueName);
+            using IHost host = builder.Build();
 
-            await channel.QueueDeclareAsync(RabbitMqNames.PaymentFailedQueueName, true, false, false);
-            await channel.QueueBindAsync(RabbitMqNames.PaymentFailedQueueName, RabbitMqNames.ExchangeName, RabbitMqNames.PaymentFailedQueueName);
-
-            AsyncEventingBasicConsumer succeededPaymentConsumer = new(channel);
-            succeededPaymentConsumer.ReceivedAsync += async (sender, ea) =>
-            {
-                var message = JsonSerializer.Deserialize<Message>(ea.Body.Span);
-                Console.WriteLine($"Succeeded: {message}");
-                await channel.BasicAckAsync(ea.DeliveryTag, false);
-            };
-            AsyncEventingBasicConsumer failedPaymentConsumer = new(channel);
-            failedPaymentConsumer.ReceivedAsync += async (sender, ea) =>
-            {
-                var message = JsonSerializer.Deserialize<Message>(ea.Body.Span);
-                Console.WriteLine($"Failed: {message}");
-                await channel.BasicAckAsync(ea.DeliveryTag, false);
-            };
-
-            await channel.BasicConsumeAsync(RabbitMqNames.PaymentSucceededQueueName, false, succeededPaymentConsumer);
-            await channel.BasicConsumeAsync(RabbitMqNames.PaymentFailedQueueName, false, failedPaymentConsumer);
-
-            Console.ReadLine();
-
-            await channel.CloseAsync();
-            await channel.DisposeAsync();
-
-            await connection.CloseAsync();
-            await connection.DisposeAsync();
+            await host.RunAsync();
         }
     }
 }

@@ -15,5 +15,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Orders.Application\Orders.Application.csproj" />
+		<ProjectReference Include="..\Orders.Infrastructure.RabbitMq\Orders.Infrastructure.RabbitMq.csproj" />
 	</ItemGroup>
 </Project>

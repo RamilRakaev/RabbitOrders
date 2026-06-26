@@ -1,3 +1,7 @@
+using Orders.Api.Services;
+using Orders.Infrastructure.RabbitMq;
+using Orders.Infrastructure.RabbitMq.Helpers;
+
 namespace Orders.Api
 {
     public class Program
@@ -10,6 +14,11 @@ namespace Orders.Api
 
             builder.Services.AddControllers();
 
+            builder.Services.AddRabbitMqMessaging();
+            builder.Services.AddTransient<MessageProducer>();
+            builder.Services.AddTransient<OrderCreationProducer>();
+            builder.Services.AddHostedService<RabbitMqTopologyDeclare>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -17,7 +26,6 @@ namespace Orders.Api
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 

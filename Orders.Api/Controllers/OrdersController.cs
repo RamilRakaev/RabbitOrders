@@ -6,25 +6,25 @@ namespace Orders.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class OrdersController : ControllerBase
+    public class OrdersController(OrderCreationProducer orderCreationProducer) : ControllerBase
     {
+        private readonly OrderCreationProducer _orderCreationProducer = orderCreationProducer;
+
         [HttpPost("CreateOrder")]
         public async Task<Order> CreateOrder(Order order)
         {
-            await using OrderCreationProducer orderCreationProducer = new();
             if (order.Product is not null)
             {
-
                 using OrderRepository repository = new();
                 var createdOrder = await repository.CreateOrder(order);
 
-                await orderCreationProducer.PublishSuccessfulCreation(createdOrder);
+                await _orderCreationProducer.PublishSuccessfulCreation(createdOrder);
 
                 return createdOrder;
             }
             else
             {
-                await orderCreationProducer.PublishFailedCreation(order);
+                await _orderCreationProducer.PublishFailedCreation(order);
                 return order;
             }
         }
