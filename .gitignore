@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/Orders.Api/Orders.db
+/Orders.Infrastructure.RabbitMq/rabbitmq.appsettings.json
+/Orders.Api/Orders.db
