@@ -1,25 +1,28 @@
-﻿using Orders.Application.Constants;
+﻿using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using Orders.Application.Constants;
+using Orders.Application.Models.Options;
 using RabbitMQ.Client;
-using Microsoft.Extensions.Hosting;
 
 namespace Orders.Infrastructure.RabbitMq.Helpers
 {
-    public class RabbitMqTopologyDeclare(IChannel channel) : IHostedLifecycleService
+    public class RabbitMqTopologyDeclare(IChannel channel, IOptions<RabbitMqTopologyOptions> options) : IHostedLifecycleService
     {
         private readonly IChannel _channel = channel;
+        private readonly RabbitMqTopologyOptions _options = options.Value;
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            await _channel.ExchangeDeclareAsync(RabbitMqNames.ExchangeName, ExchangeType.Direct, true, false);
+            await _channel.ExchangeDeclareAsync(_options.ExchangeName, ExchangeType.Direct, true, false);
 
-            await _channel.QueueDeclareAsync(RabbitMqNames.PaymentSucceededQueueName, true, false, false);
-            await _channel.QueueBindAsync(RabbitMqNames.PaymentSucceededQueueName, RabbitMqNames.ExchangeName, RabbitMqNames.PaymentSucceededQueueName);
+            await _channel.QueueDeclareAsync(_options.PaymentSucceededQueueName, true, false, false);
+            await _channel.QueueBindAsync(_options.PaymentSucceededQueueName, _options.ExchangeName, _options.PaymentSucceededQueueName);
 
-            await _channel.QueueDeclareAsync(RabbitMqNames.PaymentFailedQueueName, true, false, false);
-            await _channel.QueueBindAsync(RabbitMqNames.PaymentFailedQueueName, RabbitMqNames.ExchangeName, RabbitMqNames.PaymentFailedQueueName);
+            await _channel.QueueDeclareAsync(_options.PaymentFailedQueueName, true, false, false);
+            await _channel.QueueBindAsync(_options.PaymentFailedQueueName, _options.ExchangeName, _options.PaymentFailedQueueName);
 
-            await _channel.QueueDeclareAsync(RabbitMqNames.OrderCreatedQueueName, true, false, false);
-            await _channel.QueueBindAsync(RabbitMqNames.OrderCreatedQueueName, RabbitMqNames.ExchangeName, RabbitMqNames.OrderCreatedQueueName);
+            await _channel.QueueDeclareAsync(_options.OrderCreatedQueueName, true, false, false);
+            await _channel.QueueBindAsync(_options.OrderCreatedQueueName, _options.ExchangeName, _options.OrderCreatedQueueName);
         }
 
         public Task StartedAsync(CancellationToken cancellationToken) => Task.CompletedTask;

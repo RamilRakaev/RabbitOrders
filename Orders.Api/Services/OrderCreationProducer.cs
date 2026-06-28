@@ -1,12 +1,14 @@
-﻿using Orders.Application.Constants;
+﻿using Microsoft.Extensions.Options;
 using Orders.Application.Models;
+using Orders.Application.Models.Options;
 using Orders.Infrastructure.RabbitMq.Helpers;
 
 namespace Orders.Api.Services
 {
-    public class OrderCreationProducer(MessageProducer messageProducer)
+    public class OrderCreationProducer(MessageProducer messageProducer, IOptions<RabbitMqTopologyOptions> options)
     {
         private readonly MessageProducer _messageProducer = messageProducer;
+        private readonly RabbitMqTopologyOptions _options = options.Value;
 
         public async Task PublishSuccessfulCreation(Order createdOrder)
         {
@@ -16,7 +18,7 @@ namespace Orders.Api.Services
                 OrderId = createdOrder.Id,
                 CreatedAt = DateTime.UtcNow,
             };
-            await _messageProducer.Publish(message, RabbitMqNames.OrderCreatedQueueName);
+            await _messageProducer.Publish(message, _options.OrderCreatedQueueName);
         }
 
         public async Task PublishFailedCreation(Order createdOrder)
@@ -26,7 +28,7 @@ namespace Orders.Api.Services
                 EventType = EventTypes.OrderFailed,
                 CreatedAt = DateTime.UtcNow,
             };
-            await _messageProducer.Publish(message, RabbitMqNames.OrderCreatedQueueName);
+            await _messageProducer.Publish(message, _options.OrderCreatedQueueName);
         }
     }
 }

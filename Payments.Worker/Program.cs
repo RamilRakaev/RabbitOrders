@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Orders.Application.Models.Options;
 using Orders.Infrastructure.RabbitMq;
 using Orders.Infrastructure.RabbitMq.Helpers;
 using Payments.Worker.Services;
@@ -11,8 +13,13 @@ namespace Payments.Worker
         static async Task Main(string[] args)
         {
             HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
+
+            builder.Configuration.AddJsonFile("rabbitmq.appsettings.json");
+            builder.Services.Configure<RabbitMqConnectionOptions>(builder.Configuration.GetSection("RabbitMqConnectionOptions"));
+            builder.Services.Configure<RabbitMqTopologyOptions>(builder.Configuration.GetSection("RabbitMqTopologyOptions"));
             builder.Services.AddRabbitMqMessaging();
             builder.Services.AddHostedService<RabbitMqTopologyDeclare>();
+
             builder.Services.AddHostedService<OrderCreationRouter>();
 
             using IHost host = builder.Build();

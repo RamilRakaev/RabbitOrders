@@ -1,15 +1,16 @@
 ﻿using Microsoft.Extensions.Hosting;
-using Orders.Application.Constants;
+using Microsoft.Extensions.Options;
+using Orders.Application.Models.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text.Json;
 
 namespace Orders.Infrastructure.RabbitMq.AbstractClasses
 {
-    public abstract class BaseRabbitMqRouter<TMessage>(IChannel channel, string outpuExchangeName) : BackgroundService
+    public abstract class BaseRabbitMqRouter<TMessage>(IChannel channel, IOptions<RabbitMqTopologyOptions> options) : BackgroundService
     {
         private readonly IChannel _channel = channel;
-        protected readonly string _outpuExchangeName = outpuExchangeName;
+        private readonly RabbitMqTopologyOptions _options = options.Value;
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -26,7 +27,7 @@ namespace Orders.Infrastructure.RabbitMq.AbstractClasses
                     await _channel.BasicNackAsync(ea.DeliveryTag, false, false);
                 }
             };
-            await _channel.BasicConsumeAsync(RabbitMqNames.OrderCreatedQueueName, false, consumer);
+            await _channel.BasicConsumeAsync(_options.OrderCreatedQueueName, false, consumer);
             await Task.Delay(Timeout.Infinite, stoppingToken);
         }
 
@@ -37,7 +38,7 @@ namespace Orders.Infrastructure.RabbitMq.AbstractClasses
                 ContentType = "application/json",
                 DeliveryMode = DeliveryModes.Persistent,
             };
-            await _channel.BasicPublishAsync(_outpuExchangeName, queue, false, properties, body);
+            await _channel.BasicPublishAsync(_options.ExchangeName, queue, false, properties, body);
         }
 
         protected abstract Task RouteMessageAsync(TMessage? message, BasicDeliverEventArgs eventArgs);

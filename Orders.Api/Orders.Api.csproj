@@ -7,6 +7,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Content Include="..\Orders.Infrastructure.RabbitMq\rabbitmq.appsettings.json" Link="rabbitmq.appsettings.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Dapper" Version="2.1.79" />
 		<PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.9" />
 		<PackageReference Include="RabbitMQ.Client" Version="7.2.1" />
