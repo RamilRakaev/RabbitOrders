@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Orders.Application.Constants;
 using Orders.Application.Models.Options;
 using RabbitMQ.Client;
 

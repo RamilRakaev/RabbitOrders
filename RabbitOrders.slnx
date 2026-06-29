@@ -1,4 +1,7 @@
 <Solution>
+  <Project Path="docker-compose.dcproj">
+    <Build />
+  </Project>
   <Project Path="Notifications.Worker/Notifications.Worker.csproj" Id="adccaf61-f910-4fb2-8aa8-dd9c0d43e779" />
   <Project Path="Orders.Api/Orders.Api.csproj" />
   <Project Path="Orders.Application/Orders.Application.csproj" Id="867ae4be-ceef-40ba-a7d8-8ca440086639" />

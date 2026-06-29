@@ -24,6 +24,8 @@ namespace Orders.Api
             builder.Services.AddTransient<OrderRepository>();
             builder.Services.AddTransient<MessageProducer>();
             builder.Services.AddTransient<OrderCreationProducer>();
+            
+            builder.WebHost.UseUrls("http://0.0.0.0:8082");
 
             var app = builder.Build();
 

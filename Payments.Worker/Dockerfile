@@ -13,6 +13,8 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0-nanoserver-ltsc2022 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Payments.Worker/Payments.Worker.csproj", "Payments.Worker/"]
+COPY ["Orders.Application/Orders.Application.csproj", "Orders.Application/"]
+COPY ["Orders.Infrastructure.RabbitMq/Orders.Infrastructure.RabbitMq.csproj", "Orders.Infrastructure.RabbitMq/"]
 RUN dotnet restore "./Payments.Worker/Payments.Worker.csproj"
 COPY . .
 WORKDIR "/src/Payments.Worker"
