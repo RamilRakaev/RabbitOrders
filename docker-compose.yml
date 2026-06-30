@@ -1,14 +1,21 @@
 services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
   orders.api:
-    image: ${DOCKER_REGISTRY-}ordersapi
     build:
       context: .
       dockerfile: Orders.Api/Dockerfile
-    environment:
-      - RabbitMqConnectionOptions__HostName=rabbitmq  # <--- Ключевой момент!
     depends_on:
       - rabbitmq
+    environment:
+      RabbitMqConnectionOptions__HostName: rabbitmq
+      RabbitMqConnectionOptions__Port: 5672
+      RabbitMqConnectionOptions__UserName: guest
+      RabbitMqConnectionOptions__Password: guest
+      ASPNETCORE_HTTP_PORTS: 8080
     ports:
-    - "5096:8080"
-  rabbitmq:
-    image: rabbitmq:3-management
+      - "5096:8080"

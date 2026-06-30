@@ -15,7 +15,7 @@ namespace Orders.Api
 
             builder.Services.AddControllers();
 
-            builder.Configuration.SetBasePath(AppContext.BaseDirectory).AddJsonFile("rabbitmq.appsettings.json", optional: false, reloadOnChange: true);
+            builder.Configuration.SetBasePath(AppContext.BaseDirectory).AddJsonFile("rabbitmq.appsettings.json", optional: false, reloadOnChange: true).AddEnvironmentVariables();
             builder.Services.Configure<RabbitMqConnectionOptions>(builder.Configuration.GetSection("RabbitMqConnectionOptions"));
             builder.Services.Configure<RabbitMqTopologyOptions>(builder.Configuration.GetSection("RabbitMqTopologyOptions"));
             builder.Services.AddRabbitMqMessaging();
@@ -24,14 +24,8 @@ namespace Orders.Api
             builder.Services.AddTransient<OrderRepository>();
             builder.Services.AddTransient<MessageProducer>();
             builder.Services.AddTransient<OrderCreationProducer>();
-            
-            builder.WebHost.UseUrls("http://0.0.0.0:8082");
 
             var app = builder.Build();
-
-            // Configure the HTTP request pipeline.
-
-            app.UseHttpsRedirection();
 
             app.UseAuthorization();
 
