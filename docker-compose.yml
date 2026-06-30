@@ -12,11 +12,11 @@ services:
     depends_on:
       - rabbitmq
     environment:
-      RabbitMqConnectionOptions__HostName: rabbitmq
-      RabbitMqConnectionOptions__Port: 5672
-      RabbitMqConnectionOptions__UserName: guest
-      RabbitMqConnectionOptions__Password: guest
-      ASPNETCORE_HTTP_PORTS: 8080
+      RabbitMqConnectionOptions__HostName: ${RABBITMQ_HOST}
+      RabbitMqConnectionOptions__Port: ${RABBITMQ_PORT}
+      RabbitMqConnectionOptions__UserName: ${RABBITMQ_USER}
+      RabbitMqConnectionOptions__Password: ${RABBITMQ_PASSWORD}
+      ASPNETCORE_HTTP_PORTS: ${ASPNETCORE_HTTP_PORTS}
     ports:
       - "5096:8080"
 
@@ -27,11 +27,11 @@ services:
     depends_on:
       - rabbitmq
     environment:
-      RabbitMqConnectionOptions__HostName: rabbitmq
-      RabbitMqConnectionOptions__Port: 5672
-      RabbitMqConnectionOptions__UserName: guest
-      RabbitMqConnectionOptions__Password: guest
-      ASPNETCORE_HTTP_PORTS: 8080
+      RabbitMqConnectionOptions__HostName: ${RABBITMQ_HOST}
+      RabbitMqConnectionOptions__Port: ${RABBITMQ_PORT}
+      RabbitMqConnectionOptions__UserName: ${RABBITMQ_USER}
+      RabbitMqConnectionOptions__Password: ${RABBITMQ_PASSWORD}
+      ASPNETCORE_HTTP_PORTS: ${ASPNETCORE_HTTP_PORTS}
 
   notifications.worker:
     build:
@@ -40,8 +40,8 @@ services:
     depends_on:
       - rabbitmq
     environment:
-      RabbitMqConnectionOptions__HostName: rabbitmq
-      RabbitMqConnectionOptions__Port: 5672
-      RabbitMqConnectionOptions__UserName: guest
-      RabbitMqConnectionOptions__Password: guest
-      ASPNETCORE_HTTP_PORTS: 8080
+      RabbitMqConnectionOptions__HostName: ${RABBITMQ_HOST}
+      RabbitMqConnectionOptions__Port: ${RABBITMQ_PORT}
+      RabbitMqConnectionOptions__UserName: ${RABBITMQ_USER}
+      RabbitMqConnectionOptions__Password: ${RABBITMQ_PASSWORD}
+      ASPNETCORE_HTTP_PORTS: ${ASPNETCORE_HTTP_PORTS}
