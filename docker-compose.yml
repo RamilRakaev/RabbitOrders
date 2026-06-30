@@ -19,3 +19,29 @@ services:
       ASPNETCORE_HTTP_PORTS: 8080
     ports:
       - "5096:8080"
+
+  payments.worker:
+    build:
+      context: .
+      dockerfile: Payments.Worker/Dockerfile
+    depends_on:
+      - rabbitmq
+    environment:
+      RabbitMqConnectionOptions__HostName: rabbitmq
+      RabbitMqConnectionOptions__Port: 5672
+      RabbitMqConnectionOptions__UserName: guest
+      RabbitMqConnectionOptions__Password: guest
+      ASPNETCORE_HTTP_PORTS: 8080
+
+  notifications.worker:
+    build:
+      context: .
+      dockerfile: Notifications.Worker/Dockerfile
+    depends_on:
+      - rabbitmq
+    environment:
+      RabbitMqConnectionOptions__HostName: rabbitmq
+      RabbitMqConnectionOptions__Port: 5672
+      RabbitMqConnectionOptions__UserName: guest
+      RabbitMqConnectionOptions__Password: guest
+      ASPNETCORE_HTTP_PORTS: 8080

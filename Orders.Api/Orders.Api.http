@@ -1,6 +1,8 @@
-@Orders.Api_HostAddress = http://localhost:5094
+@Orders.Api_HostAddress = http://localhost:5096
 
-GET {{Orders.Api_HostAddress}}/weatherforecast/
-Accept: application/json
+POST {{Orders.Api_HostAddress}}/Orders/CreateOrder
+Content-Type: application/json
 
-###
+{
+  "Product": "garbage"
+}

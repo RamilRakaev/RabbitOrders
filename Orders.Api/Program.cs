@@ -15,7 +15,9 @@ namespace Orders.Api
 
             builder.Services.AddControllers();
 
-            builder.Configuration.SetBasePath(AppContext.BaseDirectory).AddJsonFile("rabbitmq.appsettings.json", optional: false, reloadOnChange: true).AddEnvironmentVariables();
+            builder.Configuration.SetBasePath(AppContext.BaseDirectory)
+                .AddJsonFile("rabbitmq.appsettings.json", optional: false, reloadOnChange: true)
+                .AddEnvironmentVariables();
             builder.Services.Configure<RabbitMqConnectionOptions>(builder.Configuration.GetSection("RabbitMqConnectionOptions"));
             builder.Services.Configure<RabbitMqTopologyOptions>(builder.Configuration.GetSection("RabbitMqTopologyOptions"));
             builder.Services.AddRabbitMqMessaging();
